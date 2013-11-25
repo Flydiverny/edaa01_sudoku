@@ -7,55 +7,85 @@ import java.util.List;
 
 public class SudokuSolver {
 	
-	private int[][] orgMatrix;
-	private Cell[][] cellMatrix;
+	private int[][] matrix;
+	
+	private boolean isSolved = false;
+	
+	public SudokuSolver() {
+		this(new int[9][9]);
+	}
 	
 	public SudokuSolver(int[][] matrix) {
-		orgMatrix = matrix;
-		
 		if(matrix.length != 9 || matrix[0].length != 9) {
 			throw new IllegalArgumentException("Is not a valid Sudoko matrix. Should be 9x9.");
 		}
 		
-		cellMatrix = convertMatrix(matrix);
+		this.matrix = matrix;
 	}
 	
 	public int[][] getMatrix() {
-		return convertMatrix(cellMatrix);
-	}
-	
-	public boolean solve() {
-		// if unsolveable return false.
-		// returns true when solved.
-		
-		// Validate matrix.
-		if(solve(0, 0)) {
-			return true;
-		}
-		
-		
-		// nuke matrix since it wasnt solveable..
-		return false;
+		return matrix;
 	}
 
 	/**
-	 * Recursively solve from given x & y until end of cellMatrix.
+	 * Checks if entered numbers are valid.
+	 * @return true if valid, else false.
+	 */
+	private boolean isValidMatrix() {
+		 for(int y = 0; y < 9; y++) {
+			 for(int x = 0; x < 9; x++) {
+				 if(matrix[y][x] > 0 &&!isValidNumber(y, x, matrix[y][x]) || matrix[y][x] > 9) {
+					 return false;
+				 }
+			 }
+		 }
+		 
+		 return true;
+	}
+	
+	/**
+	 * Attempts to solve the Sudoku.
+	 * post: getMatrix() contains solution.
+	 * @return true if solved, else false.
+	 */
+	public boolean solve() {
+		if(!isValidMatrix()) {
+			return false;
+		}
+		
+		// Wont solve same matrix twice.
+		return isSolved || solve(0, 0);
+	}
+	
+	/**
+	 * Returns the current value of a given cell in the Sudoku.
+	 * @param y
+	 * @param x
+	 * @return
+	 */
+	public int getCell(int y, int x) {
+		return matrix[y][x];
+	}
+	
+	/**
+	 * Recursively solve from given x & y until end of matrix.
+	 * pre: Assumes isValidMatrix() == true.
+	 * post: matrix[][] contains solution.
 	 * @param y
 	 * @param x
 	 * @return true if solved, false if invalid.
 	 */
 	private boolean solve(int y, int x) {
 		if(y == 9) {
+			isSolved = true;
 			return true;
 		}
 		
-		Cell cell = cellMatrix[y][x];
-
 		int nextX = x == 8 ? 0 : (x+1);
 		int nextY = x == 8 ? (y+1) : y;
 		
 		// If cell is predefined just go to the next one.
-		if(cell.preset) {
+		if(matrix[y][x] > 0) {
 			return solve(nextY, nextX);
 		}
 		
@@ -64,14 +94,14 @@ public class SudokuSolver {
 			if(!isValidNumber(y, x, nbr))
 				continue;
 			
-			cell.value = nbr;
+			matrix[y][x] = nbr;
 			
 			if(solve(nextY, nextX))
 				return true;
 		}
 		
 		// No valid number, set 0 and return false.
-		cell.value = 0;
+		matrix[y][x] = 0;
 		
 		return false;
 	}
@@ -79,13 +109,13 @@ public class SudokuSolver {
 	private boolean isValidNumber(int y, int x, int nbr) {
 		// Check row.
 		for(int col = 0; col < 9; col++) {
-			if(cellMatrix[y][col].value == nbr)
+			if(matrix[y][col] == nbr)
 				return false;
 		}
 				
 		// Check column.
 		for(int row = 0; row < 9; row++) {
-			if(cellMatrix[row][x].value == nbr)
+			if(matrix[row][x] == nbr)
 				return false;
 		}
 				
@@ -94,62 +124,11 @@ public class SudokuSolver {
 				
 		for(int cY = 0; cY < 3; cY++) {
 			for(int cX = 0; cX < 3; cX++) {
-				if(cellMatrix[cubeY + cY][cubeX + cX].value == nbr)
+				if(matrix[cubeY + cY][cubeX + cX] == nbr)
 					return false;
 			}
 		}
 		
 		return true;
-	}
-
-	/**
-	 * Converts a matrix of integers to an internal Cell matrix.
-	 * @param matrix
-	 * @return
-	 */
-	private Cell[][] convertMatrix(int[][] matrix) {
-		Cell[][] convertedMatrix = new Cell[matrix.length][matrix[0].length];
-		
-		for(int y = 0; y < matrix.length; y++) {
-			for(int x = 0; x < matrix[y].length; x++) {
-				if(matrix[y][x] > 0)
-					convertedMatrix[y][x] = new Cell(matrix[y][x], true);
-				else
-					convertedMatrix[y][x] = new Cell(0);
-			}
-		}
-		
-		return convertedMatrix;
-	}
-	
-	/**
-	 * Converts an internal Cell matrix to an integer matrix.
-	 * @param matrix
-	 * @return
-	 */
-	private int[][] convertMatrix(Cell[][] matrix) {
-		int[][] convertedMatrix = new int[matrix.length][matrix[0].length];
-		
-		for(int y = 0; y < matrix.length; y++) {
-			for(int x = 0; x < matrix[y].length; x++) {
-				convertedMatrix[y][x] = matrix[y][x].value;
-			}
-		}
-		
-		return convertedMatrix;
-	}
-	
-	private class Cell {
-		private int value;
-		private boolean preset;
-		
-		public Cell(int value) {
-			this(value, false);
-		}
-		
-		public Cell(int value, boolean preset) {
-			this.value = value;
-			this.preset = preset;
-		}
 	}
 }

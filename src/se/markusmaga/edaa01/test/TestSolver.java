@@ -22,14 +22,12 @@ public class TestSolver {
 	@Test
 	public void testSolveHinted() {
 		int[][] emptyMatrix = new int[9][9];
-		emptyMatrix[4][4] = 6;
-		emptyMatrix[5][5] = 9;
-		
-		emptyMatrix[0][0] = 7;
+		emptyMatrix[8][7] = 9;
+		emptyMatrix[8][8] = 9;
 		
 		SudokuSolver solver = new SudokuSolver(emptyMatrix);
 
-		assertTrue("Couldnt solve matrix", solver.solve());
+		assertTrue("Couldnt solve matrix", !solver.solve());
 		
 		printMatrix(solver.getMatrix());
 	}
@@ -59,5 +57,6 @@ public class TestSolver {
 			
 			System.out.println("");
 		}
+		System.out.println("");
 	}
 }
