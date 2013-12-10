@@ -1,5 +1,6 @@
-package se.markusmaga.edaa01;
+package se.markusmaga.edaa01.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 
@@ -7,13 +8,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import se.markusmaga.edaa01.SudokuSolver;
+
 public class Visualizer {
 	private JTextField[][] tf = new JTextField[9][9];
+	private SudokuSolver solver;
 	
 	public Visualizer() {
+		solver = new SudokuSolver();
+		
 		JFrame frame = new JFrame();
 		frame.setSize(400, 400);
 		
+		frame.setLayout(new BorderLayout());
 		JPanel panel = new JPanel();
 		frame.add(panel);
 		
@@ -30,14 +37,9 @@ public class Visualizer {
 	
 	private void createFields(JPanel panel) {
 		for(int y = 0; y < 9; y++) {
-			int modY = y / 3;
 			for(int x = 0; x < 9; x++) {
-				tf[y][x] = new JTextField("" + x);
-				
-				int modX = x / 3;
-				if(modY==modX || modX+modY==2)
-					tf[y][x].setBackground(Color.LIGHT_GRAY);
-				
+				tf[y][x] = new Cell(solver, y, x);
+
 				panel.add(tf[y][x]);
 			}
 		}

@@ -16,11 +16,11 @@ public class SudokuSolver {
 	}
 	
 	public SudokuSolver(int[][] matrix) {
-		if(matrix.length != 9 || matrix[0].length != 9) {
+		this.matrix = matrix;
+		
+		if(matrix.length != 9 || matrix[0].length != 9 || !isValidMatrix()) {
 			throw new IllegalArgumentException("Is not a valid Sudoko matrix. Should be 9x9.");
 		}
-		
-		this.matrix = matrix;
 	}
 	
 	public int[][] getMatrix() {
@@ -34,7 +34,7 @@ public class SudokuSolver {
 	private boolean isValidMatrix() {
 		 for(int y = 0; y < 9; y++) {
 			 for(int x = 0; x < 9; x++) {
-				 if(matrix[y][x] > 0 &&!isValidNumber(y, x, matrix[y][x]) || matrix[y][x] > 9) {
+				 if(matrix[y][x] > 0 && !isValidNumber(y, x, matrix[y][x]) || matrix[y][x] > 9) {
 					 return false;
 				 }
 			 }
@@ -65,6 +65,27 @@ public class SudokuSolver {
 	 */
 	public int getCell(int y, int x) {
 		return matrix[y][x];
+	}
+	
+	/**
+	 * Forcefully sets a number at a given coordinate. 
+	 * In the Sudoku matrix.
+	 * @param y
+	 * @param x
+	 * @param 0 < nbr <= 9
+	 * @return true if valid placement, false if invalid placement.
+	 */
+	public boolean putCell(int y, int x, int nbr) {
+		if(nbr < 0 || nbr > 9)
+			throw new IllegalArgumentException("NOT A VALID SUDOKU NUMBER");
+		
+		matrix[y][x] = nbr;
+		
+		return isValidNumber(y, x, nbr);
+	}
+	
+	public void resetCell(int y, int x) {
+		matrix[y][x] = 0;
 	}
 	
 	/**
@@ -107,15 +128,9 @@ public class SudokuSolver {
 	}
 	
 	private boolean isValidNumber(int y, int x, int nbr) {
-		// Check row.
-		for(int col = 0; col < 9; col++) {
-			if(matrix[y][col] == nbr)
-				return false;
-		}
-				
-		// Check column.
-		for(int row = 0; row < 9; row++) {
-			if(matrix[row][x] == nbr)
+		// Check row & col.
+		for(int i = 0; i < 9; i++) {
+			if(matrix[y][i] == nbr && i != x || matrix[i][x] == nbr && i != y)
 				return false;
 		}
 				
@@ -124,7 +139,7 @@ public class SudokuSolver {
 				
 		for(int cY = 0; cY < 3; cY++) {
 			for(int cX = 0; cX < 3; cX++) {
-				if(matrix[cubeY + cY][cubeX + cX] == nbr)
+				if(matrix[cubeY + cY][cubeX + cX] == nbr && (cubeY + cY) != y && (cubeX + cX) != x)
 					return false;
 			}
 		}
