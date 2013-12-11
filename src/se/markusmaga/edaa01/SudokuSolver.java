@@ -9,8 +9,6 @@ public class SudokuSolver {
 	
 	private int[][] matrix;
 	
-	private boolean isSolved = false;
-	
 	public SudokuSolver() {
 		this(new int[9][9]);
 	}
@@ -54,7 +52,7 @@ public class SudokuSolver {
 		}
 		
 		// Wont solve same matrix twice.
-		return isSolved || solve(0, 0);
+		return solve(0, 0);
 	}
 	
 	/**
@@ -98,7 +96,6 @@ public class SudokuSolver {
 	 */
 	private boolean solve(int y, int x) {
 		if(y == 9) {
-			isSolved = true;
 			return true;
 		}
 		

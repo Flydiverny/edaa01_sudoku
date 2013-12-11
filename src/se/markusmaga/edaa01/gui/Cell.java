@@ -1,6 +1,7 @@
 package se.markusmaga.edaa01.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
@@ -24,6 +25,8 @@ public class Cell extends JTextField {
 	
 	private static List<Cell> cells = new LinkedList<Cell>();
 	
+	private static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
+	
 	public Cell(SudokuSolver solver, int y, int x) {
 		this.solver = solver;
 		this.y = y;
@@ -37,8 +40,40 @@ public class Cell extends JTextField {
 			defaultColor = Color.LIGHT_GRAY;
 		
 		this.setBackground(defaultColor);
+		this.setForeground(Color.BLUE);
+		this.setFont(font);
 		
 		this.setDocument(new SudokuDocument());
+	}
+	
+	public void refreshValue() {
+		int value = solver.getCell(y, x);
+		
+		int nbr = -1;
+		
+		try {
+			nbr = Integer.parseInt(this.getText());
+		} catch(NumberFormatException e) {
+			// just an empty box.
+		}
+		
+		if(value == nbr) {
+			this.setForeground(Color.BLUE);
+		} else {
+			this.setForeground(Color.BLACK);
+		}
+		
+		if(value != 0) {
+			this.setText(""+value);
+		} else {
+			this.setText("");
+		}
+	}
+	
+	public void clearCell() {
+		solver.resetCell(y, x);
+		this.refreshValue();
+		this.setBackground(defaultColor);
 	}
 
 	private static void reValidateCells() {
@@ -55,7 +90,7 @@ public class Cell extends JTextField {
 		}
 	}
 	
-	private void validateCell() {
+	private void validateCell() {		
 		try {
 			int nbr = Integer.parseInt(this.getText());
 			
@@ -65,7 +100,7 @@ public class Cell extends JTextField {
 				this.setBackground(defaultColor);
 			}
 		} catch(Exception e) {
-			solver.resetCell(y,x);
+			solver.resetCell(y, x);
 			this.setBackground(defaultColor);
 			this.setText("");
 		}
