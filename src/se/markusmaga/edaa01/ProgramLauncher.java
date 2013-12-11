@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 
 import se.markusmaga.edaa01.gui.Visualizer;
 
-public class Herp {
+public class ProgramLauncher {
 	public static void main(String[] args) {
 		new Visualizer();
 	}

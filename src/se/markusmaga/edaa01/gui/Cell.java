@@ -21,23 +21,29 @@ public class Cell extends JTextField {
 
 	private SudokuSolver solver;
 	private int y, x;
-	private Color defaultColor = Color.WHITE;
+	private Color defaultColor;
 	
+	/** List of all created cells **/
 	private static List<Cell> cells = new LinkedList<Cell>();
 	
 	private static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
 	
+	/**
+	 * Creates a new Cell used for the Sudoku GUI.
+	 * @param solver, solver to bind cell to.
+	 * @param y
+	 * @param x
+	 */
 	public Cell(SudokuSolver solver, int y, int x) {
 		this.solver = solver;
 		this.y = y;
 		this.x = x;
+		this.setHorizontalAlignment(CENTER);
 		
+		// Adds this cell to a list of all created cells, used for revalidating.
 		cells.add(this);
 		
-		int cubY = y / 3;
-		int cubX = x / 3;
-		if(cubY==cubX || cubX+cubY==2)
-			defaultColor = Color.LIGHT_GRAY;
+		defaultColor = getDefaultColor();
 		
 		this.setBackground(defaultColor);
 		this.setForeground(Color.BLUE);
@@ -46,10 +52,25 @@ public class Cell extends JTextField {
 		this.setDocument(new SudokuDocument());
 	}
 	
-	public void refreshValue() {
-		int value = solver.getCell(y, x);
+	/**
+	 * Returns the default color for this cell based on X,Y coordinates.
+	 * @return Color
+	 */
+	private Color getDefaultColor() {
+		int cubY = y / 3;
+		int cubX = x / 3;
+		if(cubY==cubX || cubX+cubY==2)
+			return Color.LIGHT_GRAY;
 		
+		return Color.WHITE;
+	}
+	
+	/**
+	 * Fetches the value for this cell from the solver.
+	 */
+	public void refreshValue() {
 		int nbr = -1;
+		int value = solver.getCell(y, x);
 		
 		try {
 			nbr = Integer.parseInt(this.getText());
@@ -57,12 +78,15 @@ public class Cell extends JTextField {
 			// just an empty box.
 		}
 		
+		/*  Set foreground color based on if the Cell already
+			contained the same value as the solver. */
 		if(value == nbr) {
 			this.setForeground(Color.BLUE);
 		} else {
 			this.setForeground(Color.BLACK);
 		}
 		
+		// Set Cell text to value.
 		if(value != 0) {
 			this.setText(""+value);
 		} else {
@@ -70,26 +94,36 @@ public class Cell extends JTextField {
 		}
 	}
 	
+	/**
+	 * Resets this cell in the solver and refetches the value for the gui.
+	 * Also resets background color.
+	 */
 	public void clearCell() {
 		solver.resetCell(y, x);
 		this.refreshValue();
 		this.setBackground(defaultColor);
 	}
 
+	/**
+	 * Revalidates all cells listed in cells.
+	 * Changing their background color if they validate the Sudoku rules.
+	 */
 	private static void reValidateCells() {
 		for(Cell c : cells) {
-			int cur = c.solver.getCell(c.y, c.x);
-		
-			if(cur != 0) {
-				if(!c.solver.putCell(c.y, c.x, cur)) {
-					c.setBackground(Color.RED);	
-				} else {
-					c.setBackground(c.defaultColor);
-				}
+			if(!c.solver.validateCell(c.y, c.x)) {
+				c.setBackground(Color.RED);	
+			} else {
+				c.setBackground(c.defaultColor);
 			}
 		}
 	}
 	
+	/**
+	 * Validates the current cell by putting the input text
+	 * into the same cell in the solver.
+	 * 
+	 * Also resets solver cell if we have an invalid input. Keeping them synced.
+	 */
 	private void validateCell() {		
 		try {
 			int nbr = Integer.parseInt(this.getText());
@@ -128,7 +162,7 @@ public class Cell extends JTextField {
 	            super.remove(offs, len);
 	            String newValue = Cell.this.getText();
 	            
-	            if(!oldValue.equals(newValue) && !newValue.equals("")) {
+	            if(!oldValue.equals(newValue)) {
 	            	validateCell();
 	            }
 	            

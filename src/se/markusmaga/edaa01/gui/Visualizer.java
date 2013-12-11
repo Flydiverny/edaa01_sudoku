@@ -20,6 +20,9 @@ public class Visualizer {
 	
 	private JButton solve, clear;
 	
+	/**
+	 * Creates a new Sudoku GUI.
+	 */
 	public Visualizer() {
 		solver = new SudokuSolver();
 		
@@ -52,6 +55,10 @@ public class Visualizer {
 		frame.setVisible(true);
 	}
 	
+	/**
+	 * Create Cells and adds them to the gui.
+	 * @param panel
+	 */
 	private void createFields(JPanel panel) {
 		for(int y = 0; y < 9; y++) {
 			for(int x = 0; x < 9; x++) {
@@ -62,6 +69,9 @@ public class Visualizer {
 		}
 	}
 	
+	/**
+	 * Calls clearCell on each cell.
+	 */
 	private void clearCells() {
 		for(int y = 0; y < 9; y++) {
 			for(int x = 0; x < 9; x++) {
@@ -70,6 +80,9 @@ public class Visualizer {
 		}
 	}
 	
+	/**
+	 * Calls refreshValue on all cells.
+	 */
 	private void populateCells() {
 		for(int y = 0; y < 9; y++) {
 			for(int x = 0; x < 9; x++) {

@@ -9,10 +9,18 @@ public class SudokuSolver {
 	
 	private int[][] matrix;
 	
+	/**
+	 * Creates a new empty Sudoku.
+	 */
 	public SudokuSolver() {
 		this(new int[9][9]);
 	}
 	
+	/**
+	 * Creates a new Sudoku solver using an input matrix.
+	 * pre: matrix 9x9
+	 * @param matrix 9x9 to use as base.
+	 */
 	public SudokuSolver(int[][] matrix) {
 		this.matrix = matrix;
 		
@@ -21,6 +29,10 @@ public class SudokuSolver {
 		}
 	}
 	
+	/**
+	 * Returns the sudoku matrix.
+	 * @return matrix int[9][9]
+	 */
 	public int[][] getMatrix() {
 		return matrix;
 	}
@@ -66,6 +78,17 @@ public class SudokuSolver {
 	}
 	
 	/**
+	 * Validates the specified cell.
+	 * @param y
+	 * @param x
+	 * @return true if valid or empty, else false.
+	 */
+	public boolean validateCell(int y, int x) {
+		int nbr = matrix[y][x];
+		return nbr > 0 ? isValidNumber(y, x, nbr) : true;
+	}
+	
+	/**
 	 * Forcefully sets a number at a given coordinate. 
 	 * In the Sudoku matrix.
 	 * @param y
@@ -74,7 +97,7 @@ public class SudokuSolver {
 	 * @return true if valid placement, false if invalid placement.
 	 */
 	public boolean putCell(int y, int x, int nbr) {
-		if(nbr < 0 || nbr > 9)
+		if(nbr < 1 || nbr > 9)
 			throw new IllegalArgumentException("NOT A VALID SUDOKU NUMBER");
 		
 		matrix[y][x] = nbr;
@@ -82,6 +105,11 @@ public class SudokuSolver {
 		return isValidNumber(y, x, nbr);
 	}
 	
+	/**
+	 * Resets the specified cell.
+	 * @param y
+	 * @param x
+	 */
 	public void resetCell(int y, int x) {
 		matrix[y][x] = 0;
 	}
@@ -124,6 +152,13 @@ public class SudokuSolver {
 		return false;
 	}
 	
+	/**
+	 * Checks if the specified nbr is a valid number by sudoku rules in specified cell.
+	 * @param y
+	 * @param x
+	 * @param nbr
+	 * @return true if valid, else false.
+	 */
 	private boolean isValidNumber(int y, int x, int nbr) {
 		// Check row & col.
 		for(int i = 0; i < 9; i++) {

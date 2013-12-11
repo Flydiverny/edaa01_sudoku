@@ -9,6 +9,9 @@ import se.markusmaga.edaa01.SudokuSolver;
 public class TestSolver {
 
 	@Test
+	/**
+	 * Tries solving an empty matrix.
+	 */
 	public void testSolveEmpty() {
 		int[][] emptyMatrix = new int[9][9];
 		
@@ -20,6 +23,9 @@ public class TestSolver {
 	}
 
 	@Test
+	/**
+	 * Tries to solve a matrix with a few preset numbers.
+	 */
 	public void testSolveHinted() {
 		int[][] emptyMatrix = new int[9][9];
 		emptyMatrix[8][7] = 9;
@@ -33,6 +39,9 @@ public class TestSolver {
 	}
 	
 	@Test
+	/**
+	 * Tries to solve an invalid matrix.
+	 */
 	public void testSolveInvalid() {
 		int[][] emptyMatrix = new int[9][9];
 		
@@ -49,9 +58,13 @@ public class TestSolver {
 		printMatrix(solver.getMatrix());
 	}
 	
+	/**
+	 * Prints the matrix to console.
+	 * @param matrix
+	 */
 	private void printMatrix(int[][] matrix) {
-		for(int y = 0; y < 9; y++) {
-			for(int x = 0; x < 9; x++) {
+		for(int y = 0; y < matrix.length; y++) {
+			for(int x = 0; x < matrix[0].length; x++) {
 				System.out.print(" " + matrix[y][x] + " ");
 			}
 			
